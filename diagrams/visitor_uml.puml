@@ -1,0 +1,99 @@
+@startuml Visitor Pattern - Chronomancer's Vault
+
+skinparam classAttributeIconSize 0
+
+interface ArtifactVisitor {
+    +visit(weapon: Weapon): void
+    +visit(potion: Potion): void
+    +visit(scroll: Scroll): void
+    +visit(ring: Ring): void
+    +visit(armor: Armor): void
+}
+
+abstract class Artifact {
+    -name: String
+    -value: int
+    -weight: int
+    +getName(): String
+    +getValue(): int
+    +getWeight(): int
+    +{abstract} accept(visitor: ArtifactVisitor): void
+}
+
+class Weapon extends Artifact {
+    -attackBonus: int
+    +getAttackBonus(): int
+    +accept(visitor: ArtifactVisitor): void
+}
+
+class Potion extends Artifact {
+    -healing: int
+    +getHealing(): int
+    +accept(visitor: ArtifactVisitor): void
+}
+
+class Scroll extends Artifact {
+    -spellName: String
+    +getSpellName(): String
+    +accept(visitor: ArtifactVisitor): void
+}
+
+class Ring extends Artifact {
+    -magicBonus: int
+    +getMagicBonus(): int
+    +accept(visitor: ArtifactVisitor): void
+}
+
+class Armor extends Artifact {
+    -defenseBonus: int
+    +getDefenseBonus(): int
+    +accept(visitor: ArtifactVisitor): void
+}
+
+class Inventory {
+    -artifacts: List<Artifact>
+    +addArtifact(artifact: Artifact): void
+    +getArtifacts(): List<Artifact>
+    +size(): int
+    +accept(visitor: ArtifactVisitor): void
+    +copy(): Inventory
+}
+
+class GoldAppraiser implements ArtifactVisitor {
+    -totalGoldValue: int
+    +getTotalGoldValue(): int
+}
+
+class EnchantmentScanner implements ArtifactVisitor {
+    -enchantedCount: int
+    +getEnchantedCount(): int
+}
+
+class CurseDetector implements ArtifactVisitor {
+    -cursedCount: int
+    +getCursedCount(): int
+}
+
+class WeightCalculator implements ArtifactVisitor {
+    -totalWeight: int
+    -heaviestName: String
+    +getTotalWeight(): int
+    +getHeaviestName(): String
+}
+
+Inventory o-- "0..*" Artifact : contains
+
+note right of Artifact
+  accept(visitor) calls
+  visitor.visit(this)
+  for double dispatch
+end note
+
+note bottom of WeightCalculator
+  4th visitor added
+  without modifying
+  artifact classes
+  (open/closed proof)
+end note
+
+@enduml
