@@ -52,6 +52,13 @@ public class ChronomancerEngine {
         inventory.accept(curseDetector);
         System.out.println("  >> Cursed artifacts found: " + curseDetector.getCursedCount() + "\n");
 
+        // --- Visitor 4: Weight Calculator (open/closed proof) ---
+        System.out.println("--- Appraisal Phase: Weight Calculator (4th visitor — open/closed proof) ---");
+        WeightCalculator weightCalc = new WeightCalculator();
+        inventory.accept(weightCalc);
+        System.out.println("  >> Total carry weight: " + weightCalc.getTotalWeight()
+                + " lbs | Heaviest item: " + weightCalc.getHeaviestName() + "\n");
+
         // --- Memento demo for each hero ---
         Caretaker caretaker = new Caretaker();
 
