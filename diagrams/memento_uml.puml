@@ -1,0 +1,88 @@
+@startuml Memento Pattern - Chronomancer's Vault
+
+skinparam classAttributeIconSize 0
+
+package "com.narxoz.rpg.combatant" {
+    class Hero {
+        -name: String
+        -hp: int
+        -maxHp: int
+        -mana: int
+        -gold: int
+        -attackPower: int
+        -defense: int
+        -inventory: Inventory
+        +createMemento(): HeroMemento
+        +restoreFromMemento(memento: HeroMemento): void
+        +takeDamage(amount: int): void
+        +heal(amount: int): void
+        +spendMana(amount: int): boolean
+        +addGold(amount: int): void
+        +isAlive(): boolean
+    }
+
+    class HeroMemento {
+        -name: String
+        -hp: int
+        -mana: int
+        -gold: int
+        -maxHp: int
+        -attackPower: int
+        -defense: int
+        -inventorySnapshot: List<Artifact>
+        ~getName(): String
+        ~getHp(): int
+        ~getMana(): int
+        ~getGold(): int
+        ~getMaxHp(): int
+        ~getAttackPower(): int
+        ~getDefense(): int
+        ~getInventorySnapshot(): List<Artifact>
+    }
+}
+
+package "com.narxoz.rpg.memento" {
+    class Caretaker {
+        -history: Deque<HeroMemento>
+        +save(memento: HeroMemento): void
+        +undo(): HeroMemento
+        +peek(): HeroMemento
+        +size(): int
+    }
+}
+
+package "com.narxoz.rpg.vault" {
+    class ChronomancerEngine {
+        +runVault(party: List<Hero>): VaultRunResult
+    }
+
+    class VaultRunResult {
+        -artifactsAppraised: int
+        -mementosCreated: int
+        -restoredCount: int
+        +getArtifactsAppraised(): int
+        +getMementosCreated(): int
+        +getRestoredCount(): int
+    }
+}
+
+Hero --> HeroMemento : creates
+Hero <.. HeroMemento : restores from
+Caretaker o-- "0..*" HeroMemento : stores (opaque)
+ChronomancerEngine --> Caretaker : uses
+ChronomancerEngine --> Hero : manages
+ChronomancerEngine --> VaultRunResult : produces
+
+note right of HeroMemento
+  Getters are package-private (~)
+  Only Hero can access internals.
+  Caretaker treats mementos
+  as opaque values.
+end note
+
+note bottom of Caretaker
+  Different package from HeroMemento
+  — cannot read snapshot fields
+end note
+
+@enduml
